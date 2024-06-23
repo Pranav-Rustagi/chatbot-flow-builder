@@ -2,8 +2,8 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 import ReactFlow, { Controls, addEdge, useEdgesState, useNodesState, useReactFlow } from 'reactflow';
 import {MessageNode, Toast} from '../';
 
+// Iterator to generate unique node ids
 let dndid = 0;
-
 
 const FlowEditor = ({ toastProps, rfInstance, setRfInstance, setNextValidId, setActiveNode }) => {
     const reactFlowWrapper = useRef(null);
@@ -11,25 +11,26 @@ const FlowEditor = ({ toastProps, rfInstance, setRfInstance, setNextValidId, set
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
     const { screenToFlowPosition, setViewport } = useReactFlow();
 
+    // Custom node types
     const nodeTypes = useMemo(() => ({
         message: MessageNode
     }), []);
 
+
+    // Generate unique ids on each node drop
     const getId = useCallback(() => {
         setNextValidId(dndid + 1);
         return `dndnode_${dndid++}`;
     }, [setNextValidId]);
 
 
+    // Restore flow from local storage
     const restoreFlow = useCallback(async () => {
         const flow = JSON.parse(localStorage.getItem('chatbot-flow'));
         if (flow) {
             const { x = 0, y = 0, zoom = 1 } = flow.viewport;
             const nodes = flow?.nodes.map((node) => {
-                return {
-                    ...node,
-                    selected: false
-                }
+                return { ...node, selected: false }
             });
 
             setNodes(nodes || []);
@@ -42,6 +43,7 @@ const FlowEditor = ({ toastProps, rfInstance, setRfInstance, setNextValidId, set
     }, [setNodes, setEdges, setViewport, setNextValidId]);
 
 
+    // Adding custom edge on connect
     const onConnect = useCallback((params) => {
         params.markerEnd = {
             type: "arrowclosed",
@@ -50,6 +52,7 @@ const FlowEditor = ({ toastProps, rfInstance, setRfInstance, setNextValidId, set
     }, [setEdges]);
 
 
+    // Tracking changes to node, and setting active node if node selected
     const customOnNodesChange = useCallback((params) => {
         const selectionTypeNodes = params.filter(n => n.type === 'select');
         const selectedNode = selectionTypeNodes.filter(n => n.selected);
@@ -64,14 +67,17 @@ const FlowEditor = ({ toastProps, rfInstance, setRfInstance, setNextValidId, set
         onNodesChange(params);
     }, [onNodesChange, setActiveNode]);
 
+
+    // Drag over event handler
     const onDragOver = useCallback((event) => {
         event.preventDefault();
         event.dataTransfer.dropEffect = 'move';
     }, []);
 
+
+    // Drop event handler and adding new node to the flow
     const onDrop = useCallback((event) => {
             event.preventDefault();
-
             const type = event.dataTransfer.getData('application/reactflow');
 
             if (typeof type === 'undefined' || !type) {
@@ -79,14 +85,11 @@ const FlowEditor = ({ toastProps, rfInstance, setRfInstance, setNextValidId, set
             }
 
             const position = screenToFlowPosition({ x: event.clientX, y: event.clientY });
-
             const newNode = {
                 id: getId(),
                 type,
                 position,
-                data: {
-                    text: `text ${rfInstance?.getNodes().length + 1}`,
-                },
+                data: { text: `text ${rfInstance?.getNodes().length + 1}`},
                 selectable: true
             };
 
@@ -95,6 +98,8 @@ const FlowEditor = ({ toastProps, rfInstance, setRfInstance, setNextValidId, set
         [screenToFlowPosition, rfInstance, setNodes, getId],
     );
 
+
+    // Restore flow on initial render
     useEffect(() => {
         restoreFlow();
     }, []);

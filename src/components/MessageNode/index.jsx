@@ -9,10 +9,11 @@ const selector = (s) => ({
 });
 
 const MessageNode = ({ data }) => {
-
     const { nodeInternals, edges } = useStore(selector);
     const nodeId = useNodeId();
 
+    // Checks if the source handler is already connected
+    // Allows only one edge originating from a source handle
     const isHandleConnectable = useMemo(() => {
         const node = nodeInternals.get(nodeId);
         const connectedEdges = getConnectedEdges([node], edges).filter(e => e.source === node.id);

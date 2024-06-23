@@ -10,6 +10,7 @@ const App = () => {
     const [editableNodeText, setEditableNodeText] = useState('');
     const [toastProps, setToastProps] = useState({ show: false });
 
+    // Sets the text of the selected node to the textarea in Settings Panel
     useEffect(() => {
         if(activeNode !== null) {
             const node = rfInstance.getNode(activeNode);
@@ -18,6 +19,7 @@ const App = () => {
     }, [rfInstance, activeNode]);
 
     
+    // Saves the flow to local storage including the nextValidId
     const onSave = useCallback(() => {
         const targettedNodes = rfInstance.getEdges().reduce((acc, edge) => {
             const targettedNodeId = edge.target;
@@ -25,11 +27,13 @@ const App = () => {
             return acc;
         }, new Set());
         
+        // Shows error toast if there are more than one node in the flow that are not connected
         if (rfInstance.getNodes().length - targettedNodes.size > 1) {
             setToastProps(props => ({ ...props, show: true, type: "error" }));
             return;
         }
         
+        // Shows success toast if there are no errors
         setToastProps(props => ({ ...props, show: true, type: "success" }));
         const flow = rfInstance.toObject();
         flow['nextValidId'] = nextValidId;
@@ -37,6 +41,7 @@ const App = () => {
     }, [rfInstance, setToastProps, nextValidId]);
 
 
+    // Hides toast after 5 seconds
     useEffect(() => {
         if (toastProps.show === true) {
             setTimeout(() => {

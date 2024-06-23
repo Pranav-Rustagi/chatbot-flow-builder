@@ -1,6 +1,7 @@
 import chat_icon from "../../assets/image.png"
 
 const NodesPanel = () => {
+    // transfers data between events
     const onDragStart = (event, nodeType) => {
         event.dataTransfer.setData('application/reactflow', nodeType);
         event.dataTransfer.effectAllowed = 'move';
