@@ -1,0 +1,213 @@
+:root {
+    --primary-color: #515bc9;
+    --secondary-color: #b2f0e5;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+.app-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+.btn {
+    padding: 0.5rem 2rem;
+    border: 1.5px solid var(--primary-color);
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-radius: 7.5px;
+    color: var(--primary-color);
+    cursor: pointer;
+    transition: all 0.5s;
+}
+
+.btn:hover {
+    transform: scale(1.015);
+    cursor: pointer;
+}
+
+.btn:active {
+    transform: scale(0.985);
+}
+
+.sidebar {
+    height: 100%;
+    width: 25%;
+    min-width: 300px;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+}
+
+.action-btn-container {
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.flow-editor {
+    width: 75%;
+    position: relative;
+    background: rgb(235, 235, 235);
+}
+
+.nodes-panel {
+    border-top: 2px solid #ddd;
+    min-width: 300px;
+    padding: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-content: flex-start;
+}
+
+.node-placeholder {
+    width: calc(50% - 1rem);
+    height: fit-content;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border: 1.5px solid var(--primary-color);
+    color: var(--primary-color);
+    font-size: 0.8rem;
+    gap: 0.5rem;
+    display: inline-flex;
+    cursor: grab;
+    user-select: none;
+    border-radius: 5px;
+    background: white;
+}
+
+.node-icon {
+    width: 25%;
+    transform: rotateY(180deg);
+}
+
+
+.message-node {
+    display: flex;
+    flex-direction: column;
+    border-radius: 5px;
+    overflow: hidden;
+    font-size: 0.45rem;
+    box-shadow: 0.1rem 0.1rem 0.25rem  rgba(0, 0, 0, 0.4);
+    width: 10rem;
+}
+
+.message-node:focus-visible {
+    outline: none;
+}
+
+.react-flow__node.selected {
+    border-radius: 5px;
+    box-shadow: 0px 0px 0px 1px var(--primary-color);
+}
+
+.node-header {
+    display: flex;
+    background-color: var(--secondary-color);
+    font-weight: 600;
+    justify-content: space-between;
+    padding: 0.2rem 0.5rem;
+}
+
+.node-header > div {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.node-header > div:last-child {
+    background: white;
+    border-radius: 100%;
+    height: 10px;
+    width: 10px;
+    justify-content: center;
+}
+
+.node-header img {
+    width: 7.5px!important;
+    height: 7.5px!important;
+}
+
+.node-header > div:last-child > img {
+    width: 7px!important;
+    height: 7px!important;
+    transform: translate(0.25px);
+}
+
+.node-body {
+    padding: 0.6rem 0.5rem;
+    background: white;
+}
+
+
+.settings-panel {
+    border-top: 2px solid #ddd;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+}
+
+.panel-header {
+    text-align: center;
+    padding: 0.75rem;
+    border-bottom: 1px solid #ddd;
+    position: relative;
+}
+
+.panel-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.panel-body label {
+    color: #666;
+}
+
+.panel-body textarea {
+    outline: none;
+    border: 1.5px solid #ddd;
+    font-size: 0.8rem;
+    padding: 0.5rem;
+}
+
+.back-btn {
+    position: absolute;
+    width: 1.25rem;
+    height: 1.25rem;
+    left: 1rem;
+    cursor: pointer;
+    padding: 0.15rem;
+}
+
+.toast {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    padding: 0.5rem 0.75rem;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    z-index: 10000;
+    font-weight: 600;
+    box-shadow: 0rem 0.05rem 0.25rem  rgba(0, 0, 0, 0.4);
+    transform: translateY(-100%);
+    transition: all 0.5s;
+}
+
+.toast.active {
+    transform: translateY(1rem);
+}
+
+.toast.error {
+    background: rgb(239, 176, 176);
+}
