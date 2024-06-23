@@ -1,4 +1,4 @@
-const SettingsPanel = ({ value, closeSettingsPanel, onEdit }) => {
+const SettingsPanel = ({ editableNodeText, closeSettingsPanel, onEdit }) => {
     return (
         <div className="settings-panel flex flex-col">
             <div className="panel-header">
@@ -9,7 +9,7 @@ const SettingsPanel = ({ value, closeSettingsPanel, onEdit }) => {
             </div>
             <div className="panel-body flex flex-col">
                 <label htmlFor="message-content">Text</label>
-                <textarea name="message-content" rows={4} id="" value={value} onChange={onEdit} />
+                <textarea name="message-content" rows={4} id="" value={editableNodeText} onChange={onEdit} />
             </div>
         </div>
     );

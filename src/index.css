@@ -201,6 +201,6 @@
     background: var(--error-color);
 }
 
-.toast-success {
+.toast.success {
     background: var(--success-color);
 }

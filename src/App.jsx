@@ -7,13 +7,13 @@ const App = () => {
     const [nextValidId, setNextValidId] = useState(0);
     const [rfInstance, setRfInstance] = useState(null);
     const [activeNode, setActiveNode] = useState(null);
-    const [value, setValue] = useState('');
-    const [error, setError] = useState(false);
+    const [editableNodeText, setEditableNodeText] = useState('');
+    const [toastProps, setToastProps] = useState({ show: false });
 
     useEffect(() => {
         if(activeNode !== null) {
             const node = rfInstance.getNode(activeNode);
-            setValue(node.data.text);
+            setEditableNodeText(node.data.text);
         }
     }, [rfInstance, activeNode]);
 
@@ -26,23 +26,24 @@ const App = () => {
         }, new Set());
         
         if (rfInstance.getNodes().length - targettedNodes.size > 1) {
-            setError(true);
+            setToastProps(props => ({ ...props, show: true, type: "error" }));
             return;
         }
         
+        setToastProps(props => ({ ...props, show: true, type: "success" }));
         const flow = rfInstance.toObject();
         flow['nextValidId'] = nextValidId;
         localStorage.setItem('chatbot-flow', JSON.stringify(flow));
-    }, [rfInstance, setError, nextValidId]);
+    }, [rfInstance, setToastProps, nextValidId]);
 
 
     useEffect(() => {
-        if (error === true) {
+        if (toastProps.show === true) {
             setTimeout(() => {
-                setError(false);
-            }, 3000);
+                setToastProps(props => ({ ...props, show: false }));
+            }, 5000);
         }
-    }, [error, setError]);
+    }, [toastProps.show, setToastProps]);
 
 
     return (
@@ -53,13 +54,13 @@ const App = () => {
                     setRfInstance={setRfInstance}
                     setNextValidId={setNextValidId}
                     setActiveNode={setActiveNode}
-                    error={error}
+                    toastProps={toastProps}
                 />
 
                 <Sidebar
                     rfInstance={rfInstance}
-                    value={value}
-                    setValue={setValue}
+                    editableNodeText={editableNodeText}
+                    setEditableNodeText={setEditableNodeText}
                     activeNode={activeNode}
                     setActiveNode={setActiveNode}
                     onSave={onSave}

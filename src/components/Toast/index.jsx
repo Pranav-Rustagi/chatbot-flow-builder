@@ -1,7 +1,12 @@
-const Toast = ({type = 'error', show = false }) => {
+const Toast = ({ show, type }) => {
+    const toastMsg = {
+        "success": 'Flow saved successfully',
+        "error": 'Cannot save Flow'
+    }
+
     return (
         <div className={`toast border-radius-5 ${type} ${show ? 'active' : ''}`}>
-            Cannot save Flow
+            {toastMsg[type]}
         </div>
     );
 }

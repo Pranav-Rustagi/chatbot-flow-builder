@@ -5,7 +5,7 @@ import {MessageNode, Toast} from '../';
 let dndid = 0;
 
 
-const FlowEditor = ({ error, rfInstance, setRfInstance, setNextValidId, setActiveNode }) => {
+const FlowEditor = ({ toastProps, rfInstance, setRfInstance, setNextValidId, setActiveNode }) => {
     const reactFlowWrapper = useRef(null);
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -101,7 +101,7 @@ const FlowEditor = ({ error, rfInstance, setRfInstance, setNextValidId, setActiv
 
     return (
         <div className="flow-editor" ref={reactFlowWrapper}>
-            <Toast type="error" show={error} />
+            <Toast {...toastProps} />
             <ReactFlow
                 nodeTypes={nodeTypes}
                 nodes={nodes}
