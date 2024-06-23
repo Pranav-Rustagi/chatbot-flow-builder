@@ -47,7 +47,7 @@ const App = () => {
 
     return (
         <ReactFlowProvider>
-            <div className="app-container">
+            <div className="app-container flex">
                 <FlowEditor
                     rfInstance={rfInstance}
                     setRfInstance={setRfInstance}

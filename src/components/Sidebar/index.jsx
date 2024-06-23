@@ -22,8 +22,8 @@ const Sidebar = ({ rfInstance, value, setValue, activeNode, setActiveNode, onSav
     
     
     return (
-        <div className="sidebar">
-            <div className="action-btn-container">
+        <div className="sidebar flex flex-col">
+            <div className="action-btn-container flex">
                 <button className="btn" onClick={onSave}>Save Changes</button>
             </div>
             {

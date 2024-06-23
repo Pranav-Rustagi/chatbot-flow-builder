@@ -20,13 +20,13 @@ const MessageNode = ({ data }) => {
     }, [nodeId, nodeInternals, edges]);
 
     return (
-        <div className="message-node" tabIndex={0}>
-            <div className="node-header">
-                <div>
+        <div className="message-node flex flex-col border-radius-5">
+            <div className="node-header flex">
+                <div className="flex">
                     <img src={src1} alt="" />
                     Send Message
                 </div>
-                <div>
+                <div className="flex">
                     <img src={src2} alt="" />
                 </div>
             </div>

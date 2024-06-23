@@ -7,9 +7,9 @@ const NodesPanel = () => {
     };
 
     return (
-        <div className="nodes-panel">
+        <div className="nodes-panel flex">
             <div 
-                className="node-placeholder" 
+                className="node-placeholder flex flex-col border-radius-5" 
                 draggable
                 onDragStart={(event) => onDragStart(event, 'message')}
             >
