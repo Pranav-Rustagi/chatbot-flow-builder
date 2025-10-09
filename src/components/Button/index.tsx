@@ -1,3 +1,4 @@
+// Button: Reusable button component for UI actions
 interface ButtonProps {
     icon?: string;
     label?: string;
@@ -7,7 +8,8 @@ interface ButtonProps {
 
 const Button: React.FC<ButtonProps> = ({ label = "Click me", onClick, disabled = false, icon = null }) => {
     return (
-        <button onClick={onClick} disabled={disabled} className="flex items-center gap-2 px-8 py-2 bg-white text-primary text-sm border rounded disabled:opacity-50 font-semibold">
+        <button onClick={onClick} disabled={disabled} className="flex items-center gap-2 px-8 py-2 bg-white text-primary text-sm border rounded disabled:opacity-50 font-semibold cursor-pointer active:scale-[0.975]">
+            {/* Show icon if provided */}
             {
                 icon &&
                 <img src={icon} alt={`${label} icon`} className="w-4 h-4" />

@@ -1,10 +1,21 @@
 @import "tailwindcss";
 
+/* Theme variables for custom colors used in Tailwind and app */
 @theme {
     --color-primary: #515bc9;
+    --color-node-tertiary: #b2f0e5;
+    --color-error: #efb0b0;
+    --color-success: #b0efb0;
 }
 
+/* Ensure root element takes full viewport */
 #root {
     width: 100vw;
     height: 100vh;
+}
+
+/* Style for React Flow handle elements */
+.react-flow__handle {
+    width: 8px;
+    height: 8px;
 }
