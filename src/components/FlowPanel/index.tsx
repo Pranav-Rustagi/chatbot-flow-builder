@@ -1,6 +1,6 @@
 
 // FlowPanel: Main flow builder panel using React Flow
-import { Background, Controls, ReactFlow, Handle, Position, useViewport, applyNodeChanges, useReactFlow } from "@xyflow/react";
+import { Background, Controls, ReactFlow, Handle, Position, applyNodeChanges, useReactFlow } from "@xyflow/react";
 import React, { useCallback } from "react";
 
 
