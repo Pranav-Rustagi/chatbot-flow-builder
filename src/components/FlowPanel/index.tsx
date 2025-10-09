@@ -1,6 +1,6 @@
 
 // FlowPanel: Main flow builder panel using React Flow
-import { Background, Controls, ReactFlow, Handle, Position, applyNodeChanges, useReactFlow } from "@xyflow/react";
+import { Background, Controls, ReactFlow, Handle, Position, applyNodeChanges, useReactFlow, MarkerType } from "@xyflow/react";
 import React, { useCallback } from "react";
 
 
@@ -85,24 +85,31 @@ const FlowPanel: React.FC<FlowPanelProps> = ({ flow, setFlow, setSelectedNode })
     }, [setFlow, flow.nodes.length]);
 
     // Render React Flow with custom logic for selection, connection, and node changes
+    // Add arrow marker to edges for flow direction
+    const edgesWithArrow = flow.edges.map(edge => ({
+        ...edge,
+        markerEnd: {
+            type: MarkerType.ArrowClosed,
+            width: 24,
+            height: 24
+        }
+    }));
+
     return (
         <div className="flex-3" style={{ height: '100vh' }} onDrop={onDrop} onDragOver={e => e.preventDefault()}>
             <ReactFlow
                 nodes={flow.nodes.map(node => ({ ...node, draggable: true }))}
-                edges={flow.edges}
+                edges={edgesWithArrow}
                 nodeTypes={nodeTypes}
                 onNodeClick={onNodeClick}
                 onNodeDragStart={() => {
                     setSelectedNode(null);
-                    // Deselect all nodes in React Flow
                     reactFlowInstance.setNodes(nodes => nodes.map(n => ({ ...n, selected: false })));
                 }}
                 onPaneClick={() => setSelectedNode(null)}
                 onConnect={({ source, target }) => {
-                    // Restrict to only one outgoing edge per source node
                     const outgoing = flow.edges.filter(e => e.source === source);
                     if (outgoing.length > 0) {
-                        // Prevent multiple outgoing edges from a node
                         return;
                     }
                     setFlow(f => ({
@@ -117,7 +124,6 @@ const FlowPanel: React.FC<FlowPanelProps> = ({ flow, setFlow, setSelectedNode })
                     }));
                 }}
             >
-                {/* Background grid and controls for flow editing */}
                 <Background />
                 <Controls />
             </ReactFlow>
