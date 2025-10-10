@@ -1,7 +1,8 @@
 
 // FlowPanel: Main flow builder panel using React Flow
-import { Background, ReactFlow, Handle, Position, applyNodeChanges, useReactFlow, MarkerType, applyEdgeChanges } from "@xyflow/react";
-import React, { useCallback, useEffect, useMemo } from "react";
+
+import { Background, ReactFlow, Handle, Position, addEdge, MarkerType, type Connection } from "@xyflow/react";
+import { useCallback, useMemo } from "react";
 
 
 // Type definitions for nodes, edges, and flow state
@@ -22,16 +23,15 @@ interface EdgeData {
     target: string;
 }
 
-interface FlowType {
+type FlowPanelProps = {
     nodes: NodeData[];
+    setNodes: React.Dispatch<React.SetStateAction<NodeData[]>>;
+    onNodesChange: (changes: any) => void;
     edges: EdgeData[];
-}
-
-interface FlowPanelProps {
-    flow: FlowType;
-    setFlow: React.Dispatch<React.SetStateAction<FlowType>>;
+    setEdges: React.Dispatch<React.SetStateAction<EdgeData[]>>;
+    onEdgesChange: (changes: any) => void;
     setSelectedNode: React.Dispatch<React.SetStateAction<string | null>>;
-}
+};
 
 
 // Custom node component for message nodes
@@ -53,19 +53,16 @@ const MessageNode = ({ data, selected, dragging }: { data: { label: string; icon
 
 
 // Main FlowPanel component: handles node/edge rendering, drag/drop, selection, and connection logic
-const FlowPanel: React.FC<FlowPanelProps> = ({ flow, setFlow, setSelectedNode }) => {
-    const reactFlowInstance = useReactFlow();
+
+const FlowPanel: React.FC<FlowPanelProps> = ({ nodes, setNodes, onNodesChange, edges, setEdges, onEdgesChange, setSelectedNode }) => {
 
     // Register custom node types for React Flow
     const nodeTypes = useMemo(() => ({
         message: MessageNode
-    }), [MessageNode]);
-
-    // Select node on click
-    const onNodeClick = useCallback((_: any, node: any) => setSelectedNode(node.id), [setSelectedNode]);
+    }), []);
 
     // Handle node drop from sidebar
-    const onDrop = useCallback((event: React.DragEvent) => {
+    const onDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
         let type = event.dataTransfer.getData("application/node-type");
         type = "message";
@@ -80,74 +77,41 @@ const FlowPanel: React.FC<FlowPanelProps> = ({ flow, setFlow, setSelectedNode })
             position,
             data: { label: `Sample message`, icon: "./message_node.png" }
         };
-        setFlow(f => ({ ...f, nodes: [...f.nodes, newNode] }));
-    }, [setFlow, flow.nodes.length]);
+        setNodes((nds: NodeData[]) => [...nds, newNode]);
+    }, [setNodes]);
 
-    // Render React Flow with custom logic for selection, connection, and node changes
-    // Add arrow marker to edges for flow direction
-    const edgesWithArrow = flow.edges.map(edge => ({
-        ...edge,
-        markerEnd: {
-            type: MarkerType.ArrowClosed,
-            width: 24,
-            height: 24
-        }
-    }));
+    // Handle edge connection (only one outgoing edge per source)
 
+    const onConnect = useCallback((params: Connection) => {
+        const outgoing = edges.filter(e => e.source === params.source);
+        if (outgoing.length > 0) return;
+        setEdges((eds) =>
+            addEdge(params, eds).map(edge => ({
+                ...edge,
+                markerEnd: {
+                    type: MarkerType.ArrowClosed,
+                    width: 24,
+                    height: 24
+                }
+            }))
+        );
+    }, [edges, setEdges]);
 
-    // Load flow from localStorage on initial mount
-    useEffect(() => {
-        const savedFlow = localStorage.getItem('chatbot-flow');
-        if (savedFlow) {
-            try {
-                setFlow(JSON.parse(savedFlow));
-                reactFlowInstance.fitView({ maxZoom: 0.8 });
-            } catch { }
-        }
-    }, []);
+    // Select node on click
+    const onNodeClick = useCallback((_: unknown, node: NodeData) => setSelectedNode(node.id), [setSelectedNode]);
 
     return (
         <div className="flex-3" style={{ height: '100vh' }} onDrop={onDrop} onDragOver={e => e.preventDefault()}>
             <ReactFlow
-                nodes={flow.nodes.map(node => ({ ...node, draggable: true }))}
-                edges={edgesWithArrow}
+                nodes={nodes.map(node => ({ ...node, draggable: true }))}
+                edges={edges}
                 nodeTypes={nodeTypes}
                 onNodeClick={onNodeClick}
-                onNodeDragStart={() => {
-                    setSelectedNode(null);
-                    reactFlowInstance.setNodes(nodes => nodes.map(n => ({ ...n, selected: false })));
-                }}
+                onNodesChange={onNodesChange}
+                onEdgesChange={onEdgesChange}
+                onConnect={onConnect}
                 onPaneClick={() => setSelectedNode(null)}
-                onConnect={({ source, target }) => {
-                    const outgoing = flow.edges.filter(e => e.source === source);
-                    if (outgoing.length > 0) {
-                        return;
-                    }
-                    setFlow(f => ({
-                        ...f,
-                        edges: [...f.edges, { id: `${source}-${target}`, source, target }]
-                    }));
-                }}
-                onNodesChange={changes => {
-                    setFlow(f => ({
-                        ...f,
-                        nodes: applyNodeChanges(changes, f.nodes)
-                    }));
-
-                    if (changes[0].type === "remove") {
-                        setSelectedNode(null);
-
-                        const nodeId = changes[0].id;
-
-                        setFlow(f => ({
-                            ...f,
-                            edges: f.edges.filter(edge => edge.source !== nodeId && edge.target !== nodeId)
-                        }));
-                    }
-                }}
-                onEdgesChange={changes => {
-                    console.log(changes);
-                }}
+                onNodesDelete={() => setSelectedNode(null)}
             >
                 <Background />
             </ReactFlow>

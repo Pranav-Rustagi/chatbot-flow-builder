@@ -13,18 +13,13 @@ interface NodeData {
     [key: string]: any;
 }
 
-interface FlowType {
-    nodes: NodeData[];
-    edges: any[];
-}
-
 interface SettingsPanelProps {
     node: NodeData | undefined;
-    setFlow: React.Dispatch<React.SetStateAction<FlowType>>;
+    setNodes: React.Dispatch<React.SetStateAction<NodeData[]>>;
     onBack?: () => void;
 }
 
-const SettingsPanel: React.FC<SettingsPanelProps> = ({ node, setFlow, onBack }) => {
+const SettingsPanel: React.FC<SettingsPanelProps> = ({ node, setNodes, onBack }) => {
     // Hide panel if no node is selected
     if (!node) return null;
     return (
@@ -43,12 +38,12 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ node, setFlow, onBack }) 
                     className="border border-neutral-300 rounded px-2 py-1 w-full min-h-[80px] resize-vertical"
                     value={node.data.label}
                     onChange={e => {
-                        setFlow((f: FlowType) => ({
-                            ...f,
-                            nodes: f.nodes.map((n: NodeData) =>
-                                n.id === node.id ? { ...n, data: { ...n.data, label: e.target.value } } : n
+                        const newLabel = e.target.value;
+                        setNodes(prevNodes =>
+                            prevNodes.map(n =>
+                                n.id === node.id ? { ...n, data: { ...n.data, label: newLabel } } : n
                             )
-                        }));
+                        );
                     }}
                 />
             </div>
