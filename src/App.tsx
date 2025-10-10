@@ -43,16 +43,6 @@ const App: React.FC = () => {
     // State for the flow (nodes and edges)
     const [flow, setFlow] = useState<FlowType>({ nodes: [], edges: [] });
 
-    // Load flow from localStorage on initial mount
-    useEffect(() => {
-        const savedFlow = localStorage.getItem('chatbot-flow');
-        if (savedFlow) {
-            try {
-                setFlow(JSON.parse(savedFlow));
-            } catch {}
-        }
-    }, []);
-
     // Save handler: validates flow and persists to localStorage
     const handleSave = () => {
         // Validation: more than one node, and more than one node with empty targets

@@ -1,7 +1,7 @@
 
 // FlowPanel: Main flow builder panel using React Flow
-import { Background, Controls, ReactFlow, Handle, Position, applyNodeChanges, useReactFlow, MarkerType } from "@xyflow/react";
-import React, { useCallback } from "react";
+import { Background, ReactFlow, Handle, Position, applyNodeChanges, useReactFlow, MarkerType, applyEdgeChanges } from "@xyflow/react";
+import React, { useCallback, useEffect, useMemo } from "react";
 
 
 // Type definitions for nodes, edges, and flow state
@@ -52,15 +52,14 @@ const MessageNode = ({ data, selected, dragging }: { data: { label: string; icon
 );
 
 
-// Register custom node types for React Flow
-const nodeTypes = {
-    message: MessageNode
-};
-
-
 // Main FlowPanel component: handles node/edge rendering, drag/drop, selection, and connection logic
 const FlowPanel: React.FC<FlowPanelProps> = ({ flow, setFlow, setSelectedNode }) => {
     const reactFlowInstance = useReactFlow();
+
+    // Register custom node types for React Flow
+    const nodeTypes = useMemo(() => ({
+        message: MessageNode
+    }), [MessageNode]);
 
     // Select node on click
     const onNodeClick = useCallback((_: any, node: any) => setSelectedNode(node.id), [setSelectedNode]);
@@ -79,7 +78,7 @@ const FlowPanel: React.FC<FlowPanelProps> = ({ flow, setFlow, setSelectedNode })
             id: `${type}-${Date.now()}`,
             type,
             position,
-            data: { label: `Message ${flow.nodes.length + 1}`, icon: "./message_node.png" }
+            data: { label: `Sample message`, icon: "./message_node.png" }
         };
         setFlow(f => ({ ...f, nodes: [...f.nodes, newNode] }));
     }, [setFlow, flow.nodes.length]);
@@ -94,6 +93,18 @@ const FlowPanel: React.FC<FlowPanelProps> = ({ flow, setFlow, setSelectedNode })
             height: 24
         }
     }));
+
+
+    // Load flow from localStorage on initial mount
+    useEffect(() => {
+        const savedFlow = localStorage.getItem('chatbot-flow');
+        if (savedFlow) {
+            try {
+                setFlow(JSON.parse(savedFlow));
+                reactFlowInstance.fitView({ maxZoom: 0.8 });
+            } catch { }
+        }
+    }, []);
 
     return (
         <div className="flex-3" style={{ height: '100vh' }} onDrop={onDrop} onDragOver={e => e.preventDefault()}>
@@ -122,10 +133,23 @@ const FlowPanel: React.FC<FlowPanelProps> = ({ flow, setFlow, setSelectedNode })
                         ...f,
                         nodes: applyNodeChanges(changes, f.nodes)
                     }));
+
+                    if (changes[0].type === "remove") {
+                        setSelectedNode(null);
+
+                        const nodeId = changes[0].id;
+
+                        setFlow(f => ({
+                            ...f,
+                            edges: f.edges.filter(edge => edge.source !== nodeId && edge.target !== nodeId)
+                        }));
+                    }
+                }}
+                onEdgesChange={changes => {
+                    console.log(changes);
                 }}
             >
                 <Background />
-                <Controls />
             </ReactFlow>
         </div>
     );
